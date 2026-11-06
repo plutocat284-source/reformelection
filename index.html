@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FF7210">
+<meta name="description" content="개혁신당 가상 총선 시뮬레이터">
+<title>개혁신당 가상 총선 시뮬레이터</title>
+<style>
+:root{
+  --navy:#182235;
+  --navy2:#26364d;
+  --blue:#FF7210;
+  --cyan:#FF7210;
+  --red:#FF7210;
+  --bg:#f4f5f7;
+  --card:#fff;
+  --text:#202a3b;
+  --muted:#748096;
+  --line:#dfe5ee;
+  --shadow:0 8px 28px #10213a12;
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.55}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+header{height:76px;background:#FF7210;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100% - 1320px)/2));position:sticky;top:0;z-index:20;box-shadow:0 3px 14px #0002}
+.brand{display:flex;align-items:center;gap:14px;font-weight:900;letter-spacing:-.4px}.brand img{height:250px;max-width:170px;object-fit:contain}.brand-title{margin-left:auto;color:#fff;font-size:clamp(18px,2.4vw,25px);font-weight:900;letter-spacing:-.6px}
+.hero{background:linear-gradient(115deg,#101b32,#203d68);color:#fff;padding:30px 22px}.hero-inner{max-width:1320px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:24px}.hero h1{font-size:clamp(25px,3vw,36px);margin:0 0 8px}.hero p{margin:0;color:#d5dfef;font-size:14px}.hero img{max-width:110px;max-height:78px;object-fit:contain}
+main{max-width:1320px;margin:22px auto;padding:0 18px 44px}.notice{background:#fff;border:1px solid #d7e0ed;border-left:4px solid var(--cyan);padding:12px 15px;border-radius:10px;color:#59677d;font-size:12px;margin-bottom:16px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.metric,.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.metric{padding:14px 16px}.metric small{display:block;color:var(--muted);font-size:11px;font-weight:800}.metric strong{display:block;font-size:27px;letter-spacing:-.8px;margin-top:3px}.progress{height:6px;border-radius:20px;background:#e9edf4;margin-top:9px;overflow:hidden}.progress span{display:block;height:100%;background:var(--blue);width:0;transition:width .25s}
+.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:16px;align-items:start}.panel{padding:19px;margin-bottom:16px;min-width:0}.panel h2{font-size:18px;margin:0}.panel h3{font-size:14px;margin:0}.muted{font-size:12px;color:var(--muted);margin:4px 0 0}.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.pill{font-size:10px;font-weight:900;background:#eaf0fa;color:#355a99;padding:5px 9px;border-radius:30px;white-space:nowrap}
+.field{display:flex;flex-direction:column;gap:5px;margin-top:11px}.field label{font-size:12px;font-weight:800;color:#46536a}.field input,.field select,.field textarea{width:100%;border:1px solid #d6deea;border-radius:9px;background:#fff;padding:10px 11px;color:var(--text);outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4778d51a}.field textarea{min-height:88px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid transparent;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:850}.primary{background:#FF7210;color:#fff}
+.primary:hover{background:#E96500}.secondary{background:#fff;border-color:var(--line);color:#334057}.dark{background:var(--navy2);color:white}.danger{background:#fff0f1;color:#b52d3b;border-color:#f2cbd0}.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.map-wrap{width:100%;max-width:540px;margin:auto}
+.map-stage{position:relative;width:100%;margin:auto}
+.map-stage #baseMap{display:block;width:100%;height:auto;object-fit:contain;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{background:#f6f8fb;border:1px solid var(--line);padding:10px;border-radius:9px}.stat small{display:block;color:var(--muted);font-size:10px}.stat strong{font-size:18px}
+.bars{display:grid;gap:9px;margin-top:12px}.barrow{display:grid;grid-template-columns:90px 1fr 44px;align-items:center;gap:8px;font-size:11px}.barline{height:8px;background:#edf1f6;border-radius:20px;overflow:hidden}.barline span{height:100%;display:block;background:var(--blue)}
+.stage-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.stage-count{font-size:11px;font-weight:900;color:#4568a7;background:#edf3ff;padding:6px 9px;border-radius:8px}.stage-title{font-size:21px;font-weight:950;margin:8px 0 3px}.stage-desc{font-size:12px;color:var(--muted)}
+.event{background:#fff9ec;border:1px solid #f0dfb9;border-radius:10px;padding:13px;margin-top:13px}.event b{font-size:14px}.event p{font-size:12px;color:#75664b;margin:5px 0 0}
+.ai-result{background:#f3f6fa;border:1px solid #dce4ef;border-radius:10px;padding:12px;margin-top:12px;font-size:12px;line-height:1.7}.score{font-size:22px;font-weight:950;color:#244f9b}.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:9px 0}.score-cell{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px}.score-cell small{display:block;font-size:9px;color:var(--muted)}.score-cell b{font-size:15px}
+.list{display:grid;gap:8px;margin-top:12px}.list-item{border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff}.list-item strong{font-size:12px}.list-item p{font-size:11px;color:var(--muted);margin:3px 0 0}.log-list{max-height:320px;overflow:auto;display:grid;gap:9px}.log{border-left:3px solid #6b91d7;padding:7px 0 7px 10px}.log b{font-size:12px}.log p{font-size:11px;color:var(--muted);margin:3px 0 0}
+.hidden{display:none!important}.small-note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px}.result-hero{text-align:center;padding:17px;background:#edf3ff;border:1px solid #d5e2fa;border-radius:12px}.result-hero small{font-size:11px;color:#46659b;font-weight:900}.result-hero strong{display:block;font-size:48px;color:#244f9b;line-height:1.25}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:11px}th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);background:#f7f9fc;font-size:10px}td:last-child,th:last-child{text-align:right}
+footer{background:var(--navy);color:#d4dced;padding:23px;text-align:center;font-size:11px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#17243c;color:white;border-radius:9px;padding:11px 15px;font-size:12px;z-index:99;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){header{height:64px;padding:0 15px}.brand img{height:42px}.brand-title{font-size:18px}.hero-inner{align-items:flex-start}.hero img{max-width:65px}.hero{padding:23px 17px}.metrics{gap:7px}.metric{padding:10px}.metric strong{font-size:22px}.panel{padding:14px}.score-grid{grid-template-columns:repeat(2,1fr)}main{padding:0 12px 30px}}
+.brand img {
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<header><div class="brand">
+  <a href="index.html">
+    <img src="reform.png" alt="로고">
+  </a>
+</div><div class="brand-title">개혁신당을 내가 지휘하라!</div></header>
+<main>
+<div class="notice"><b>가상 시뮬레이션</b> · 모든 지지율·여론조사·평가·의석 결과는 게임 내부에서 생성되는 가상 데이터이며 실제 유권자나 선거 결과를 예측하지 않습니다.</div>
+<div class="metrics">
+ <div class="metric"><small>현재 진행 단계</small><strong id="mStage">시작 전</strong><div class="progress"><span id="pStage"></span></div></div>
+ <div class="metric"><small>전국 가상 지지율</small><strong id="mSupport">3.0%</strong><div class="progress"><span id="pSupport"></span></div></div>
+ <div class="metric"><small>예상 비례 의석</small><strong id="mPR">—석</strong><div class="progress"><span id="pPR"></span></div></div>
+ <div class="metric"><small>전략 유세 잔여</small><strong id="mStrategy">10 / 10</strong><div class="progress"><span id="pStrategy" style="width:100%"></span></div></div>
+</div>
+<div class="grid">
+<div>
+ <section class="panel">
+  <div class="panel-head"><div><h2>전국 권역별 가상 지지 현황</h2><p class="muted">권역을 선택하면 해당 권역의 가상 수치를 확인할 수 있습니다.</p></div><span class="pill">실제 조사 아님</span></div>
+<div class="map-wrap"><div class="map-stage" id="mapStage"><img id="baseMap" src="map.png" alt="대한민국 권역 지도"></div></div>
+  <div class="stats"><div class="stat"><small>선택 권역</small><strong id="selectedRegion">수도권</strong></div><div class="stat"><small>가상 지지율</small><strong id="selectedSupport">3.0%</strong></div><div class="stat"><small>누적 정책 수</small><strong id="selectedPolicies">0건</strong></div></div>
+  <div class="bars" id="regionBars"></div>
+ </section>
+ <section class="panel">
+  <div class="panel-head"><div><h2>세대별·직업별 가상 지표</h2><p class="muted">고정된 초기값에서 게임 활동에 따라 완만하게 변동합니다.</p></div></div>
+  <h3>세대별</h3><div class="bars" id="ageBars"></div>
+  <h3 style="margin-top:18px">직업별</h3><div class="bars" id="jobBars"></div>
+ </section>
+ <section class="panel">
+  <div class="panel-head"><div><h2>전략 기록</h2><p class="muted">공천·정책·토론·사건 대응 및 AI 평가 기록</p></div><span class="pill" id="logCount">0건</span></div>
+  <div class="log-list" id="logs"><div class="muted">게임을 시작하면 기록이 표시됩니다.</div></div>
+  <div class="btn-row"><button class="btn secondary" id="saveBtn">클라우드 저장</button><button class="btn secondary" id="loadBtn">저장 게임 불러오기</button><button class="btn danger" id="resetBtn">초기화</button></div>
+ </section>
+</div>
+<div>
+ <section class="panel" id="setup">
+  <div class="panel-head"><div><span class="pill">GAME SETUP</span><h2 style="margin-top:8px">게임 설정</h2><p class="muted">정당 및 비례대표 배분 조건을 설정합니다.</p></div></div>
+<div class="field">
+  <label>정당</label>
+  <input type="text" value="개혁신당" readonly>
+</div>
+
+<div class="field">
+  <label>국회 전체 의석수</label>
+  <input type="text" value="300석" readonly>
+</div>
+
+<div class="field">
+  <label>비례대표 의석수</label>
+  <input type="text" value="46석" readonly>
+</div>
+  <div class="field"><label>비례대표 봉쇄조항 (%)</label><input id="threshold" type="number" min="0" max="10" step=".1" value="3"></div>
+  <div class="field"><label>경쟁 정당 수 (우리 정당 제외)</label><input id="otherParties" type="number" min="1" max="20" value="5"></div>
+  <div class="field"><label>난이도</label><select id="difficulty"><option value="normal">보통</option><option value="hard">어려움</option><option value="easy">쉬움</option></select></div>
+  <p class="small-note">경쟁 정당의 득표율은 우리 정당을 제외한 나머지 득표율을 균등 분배하는 단순 가상 모델입니다. 법정 선거제도의 완전한 재현이 아닙니다.</p>
+  <div class="btn-row"><button class="btn primary" id="startBtn">새 게임 시작</button></div>
+ </section>
+ <section class="panel hidden" id="stagePanel">
+  <div class="stage-top"><span class="pill" id="phasePill">PHASE 1</span><span class="stage-count" id="stageCount">1 / 10</span></div>
+  <div class="stage-title" id="stageTitle">지역구 후보자 공천</div><p class="stage-desc" id="stageDesc"></p>
+  <div id="stageForm"></div>
+  <div id="aiOutput" class="ai-result hidden" aria-live="polite"></div>
+  <div class="btn-row"><button class="btn secondary" id="saveStageBtn">현재 단계 저장</button><button class="btn primary" id="nextBtn" disabled>다음 단계</button></div>
+ </section>
+ <section class="panel hidden" id="resultPanel">
+  <div class="result-hero"><small>최종 가상 비례대표 득표율</small><strong id="finalVote">3.0%</strong><p id="finalParty"></p></div>
+  <div class="stats"><div class="stat"><small>비례대표 의석</small><strong id="finalPR">0석</strong></div><div class="stat"><small>지역구 의석</small><strong id="finalDistrict">0석</strong></div><div class="stat"><small>총 의석</small><strong id="finalTotal">0석</strong></div></div>
+  <div class="ai-result" id="seatExplanation"></div>
+  <h3 style="margin-top:18px">비례대표 의석 배분 결과</h3><div class="table-wrap"><table><thead><tr><th>정당</th><th>가상 득표율</th><th>비례 의석</th></tr></thead><tbody id="seatResults"></tbody></table></div>
+  <div class="btn-row"><button class="btn primary" id="newGameBtn">새 게임</button><button class="btn secondary" id="saveResultBtn">결과 저장</button></div>
+ </section>
+</div>
+</div>
+</main>
+<footer>가상 선거 시뮬레이션 · 제작자: 오정훈</footer><div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* =====================================================
+   2028 총선 시뮬레이터
+   기존 HTML/CSS 유지용 전체 스크립트
+   ===================================================== */
+
+/* 1. Supabase 및 공통 설정 */
+
+const SUPABASE_URL = 'https://pgtkdnxfdznivryjephq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBndGtkbnhmZHpuaXZyeWplcGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNDQyMjQsImV4cCI6MjEwODYyMDIyNH0.UB10CMupCEyTGat4S375kSsDj2tPviJQjEoWwTRVvIM';
+
+const AI_FUNCTION = 'proportional-election-ai';
+const SAVE_TABLE = 'proportional_election_games';
+const LOCAL_SAVE_KEY = 'proportional-election-save-v1';
+
+const $ = id => document.getElementById(id);
+const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+let game = null;
+let selectedRegion = '수도권';
+let regionSelectionLocked = false;
+let busy = false;
+
+const toast = message => {
+    const element = $('toast');
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.add('show');
+
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => {
+        element.classList.remove('show');
+    }, 2400);
+};
+
+function setText(id, value) {
+    const element = $(id);
+    if (element) element.textContent = value;
+}
+
+/* =====================================================
+   2. 지도 권역 데이터
+   좌표와 이미지 파일명은 기존 값 그대로 유지
+   ===================================================== */
+
+const MAP_AREAS = [
+    {
+        name: '수도권',
+        image: 'sudo.png',
+        pixel: true,
+        points: '(21,143) (7,148) (4,169) (15,195) (27,208) (50,223) (90,242) (145,269) (164,289) (192,321) (208,354) (230,377) (252,388) (283,369) (310,360) (335,352) (360,357) (379,360) (390,369) (403,376) (418,391) (430,392) (446,385) (455,383) (476,389) (489,395) (498,388) (508,380) (515,370) (521,365) (532,369) (536,369) (541,361) (550,352) (549,346) (552,345) (564,337) (567,325) (568,315) (569,301) (574,293) (580,271) (574,269) (589,254) (577,247) (569,248) (546,233) (537,237) (536,215) (525,215) (529,207) (526,192) (541,180) (543,169) (538,160) (524,151) (512,137) (513,130) (504,124) (490,129) (483,120) (485,112) (476,116) (468,108) (466,101) (461,101) (450,92) (432,105) (430,120) (417,126) (412,140) (397,151) (378,163) (378,185) (367,202) (358,205) (344,201) (343,195) (336,191) (323,194) (306,191) (290,191) (21,139)'
+    },
+    {
+        name: '충청권',
+        image: 'chungcheong.png',
+        points: '(30,30)(60,30)(60,50)(30,50)'
+    },
+    {
+        name: '강원도',
+        image: 'gangwon.png',
+        points: '(55,5)(90,5)(90,35)(55,35)'
+    },
+    {
+        name: '대경권',
+        image: 'daegyeong.png',
+        points: '(55,35)(85,35)(85,60)(55,60)'
+    },
+    {
+        name: '부울경',
+        image: 'buulgyeong.png',
+        points: '(60,60)(90,60)(90,90)(60,90)'
+    },
+    {
+        name: '호남권',
+        image: 'honam.png',
+        points: '(15,50)(55,50)(55,90)(15,90)'
+    }
+].map(area => ({
+    ...area,
+    coords: [...area.points.matchAll(/\(([\d.]+),\s*([\d.]+)\)/g)]
+        .map(match => [Number(match[1]), Number(match[2])])
+}));
+
+const REGIONS = [
+    ['수도권', 'sudo.png'],
+    ['충청권', 'chungcheong.png'],
+    ['강원도', 'gangwon.png'],
+    ['대경권', 'daegyeong.png'],
+    ['부울경', 'buulgyeong.png'],
+    ['호남권', 'honam.png']
+];
+
+const AGES = [
+    '20대 이하',
+    '30대',
+    '40대',
+    '50대',
+    '60대 이상'
+];
+
+const JOBS = [
+    '연구원·과학기술인',
+    '학생',
+    '공무원',
+    '직장인',
+    '자영업자',
+    '구직자',
+    '농림어업 종사자',
+    '은퇴자'
+];
+
+const STAGES = [
+    ['공천', '지역구 후보자 최대 10명 공천', '후보자의 기본 정보와 전문 분야를 직접 입력하세요.'],
+    ['후보 공약', '지역구 후보자 차별화 공약', '공천한 후보자 중 한 명을 선택하고 해당 지역의 공약을 작성하세요.'],
+    ['권역 정책 1차', '권역별 정책 발표 1차', '지도에서 권역을 선택하고 정책의 목표·실행 방법·재원·성과 기준을 작성하세요.'],
+    ['돌발 이벤트 1', '제1차 돌발 이벤트', '가상의 사건에 대한 공식 대응을 작성하세요.'],
+    ['권역 정책 2차', '권역별 정책 발표 2차', '1차 정책과 구분되는 신규 정책 또는 보완 정책을 작성하세요.'],
+    ['가상 여론조사', '가상 여론조사 발표 및 대응', '가상 조사 수치를 확인하고 조사 해석과 후속 계획을 작성하세요.'],
+    ['돌발 이벤트 2', '제2차 돌발 이벤트', '두 번째 가상 사건에 대한 대응을 작성하세요.'],
+    ['토론회', '가상 후보자 토론회', 'AI 질문에 대해 근거와 실행 계획을 포함해 답변하세요.'],
+    ['막판 유세', '막판 유세 일정', '유세 일정과 주요 정책 설명 계획을 작성하세요.'],
+    ['개표', '최종 선거 결과 발표', '비례대표 득표율과 설정한 배분 방식에 따라 의석을 계산합니다.']
+];
+
+const SCIENCE = [
+    '인공지능',
+    '우주항공',
+    '반도체',
+    '바이오',
+    '핵융합',
+    '차세대 에너지',
+    '로봇',
+    '첨단 국방기술'
+];
+
+/* =====================================================
+   3. 초기 지지율 및 정책 효과
+   ===================================================== */
+
+const INITIAL_REGION_SUPPORT = {
+    '수도권': 4.9,
+    '충청권': 3.8,
+    '대경권': 2.8,
+    '강원도': 2.0,
+    '부울경': 1.9,
+    '호남권': 0.4
+};
+
+const POLICY_REGION_MULTIPLIERS = {
+    '수도권': 1.30,
+    '충청권': 1.18,
+    '대경권': 1.10,
+    '강원도': 1.00,
+    '부울경': 0.90,
+    '호남권': 0.80
+};
+
+function initialGroups() {
+    return {
+        regions: { ...INITIAL_REGION_SUPPORT },
+
+        ages: Object.fromEntries(
+            AGES.map((name, index) => [
+                name,
+                [11.1, 0.9, 2.0, 0.3, 1.4][index]
+            ])
+        ),
+
+        jobs: Object.fromEntries(
+            JOBS.map((name, index) => [
+                name,
+                [4.0, 2.3, 2.9, 2.5, 2.7, 2.7, 2.5, 2.9][index]
+            ])
+        )
+    };
+}
+
+function getRegionSupport(region) {
+    return game?.groups?.regions?.[region]
+        ?? INITIAL_REGION_SUPPORT[region]
+        ?? 0;
+}
+
+function updateSupport(score, meta = {}) {
+    const delta = clamp(score, -10, 10) * 0.055;
+    const region = meta.region;
+
+    game.support = clamp(
+        game.support + delta,
+        0.5,
+        25
+    );
+
+    if (region && game.groups.regions[region] !== undefined) {
+        const multiplier = meta.mode === 'policy'
+            ? (POLICY_REGION_MULTIPLIERS[region] ?? 1)
+            : 1.25;
+
+        game.groups.regions[region] = clamp(
+            game.groups.regions[region] + delta * multiplier,
+            0.2,
+            30
+        );
+    } else {
+        Object.keys(game.groups.regions).forEach(name => {
+            game.groups.regions[name] = clamp(
+                game.groups.regions[name] + delta * 0.65,
+                0.2,
+                30
+            );
+        });
+    }
+
+    Object.keys(game.groups.ages).forEach((name, index) => {
+        game.groups.ages[name] = clamp(
+            game.groups.ages[name] + delta * (0.7 + (index % 3) * 0.1),
+            0.2,
+            30
+        );
+    });
+
+    const jobChangeWeights = {
+        '연구원·과학기술인': 0.65,
+        '학생': 0.65,
+        '공무원': 1.01,
+        '직장인': 0.77,
+        '자영업자': 0.89,
+        '구직자': 0.89,
+        '농림어업 종사자': 0.77,
+        '은퇴자': 1.01
+    };
+
+    Object.keys(game.groups.jobs).forEach(name => {
+        game.groups.jobs[name] = clamp(
+            game.groups.jobs[name] + delta * (jobChangeWeights[name] ?? 1),
+            0.2,
+            30
+        );
+    });
+}
+
+/* =====================================================
+   4. 게임 시작 및 공통 화면
+   ===================================================== */
+
+function startGame() {
+    const threshold = Number($('threshold')?.value);
+    const others = Number($('otherParties')?.value);
+
+    if (!Number.isFinite(threshold) || !Number.isFinite(others) ||
+        threshold < 0 || others < 1) {
+        toast('봉쇄조항과 경쟁 정당 수를 확인하세요.');
+        return;
+    }
+
+    game = {
+        version: 2,
+        id: crypto.randomUUID(),
+        saveKey: crypto.randomUUID(),
+
+        party: '개혁신당',
+
+        settings: {
+            total: 300,
+            pr: 46,
+            threshold,
+            others,
+            formula: 'hare',
+            difficulty: $('difficulty')?.value || 'normal'
+        },
+
+        stage: 0,
+        support: 2.7,
+        groups: initialGroups(),
+
+        candidates: [],
+        pledges: [],
+        logs: [],
+
+        strategyLeft: 10,
+        strategyUsed: 0,
+        usedStrategies: [],
+
+        event: null,
+        eventStage: null,
+        eventResolved: false,
+        poll: null,
+        pollResolved: false,
+        debateResolved: false,
+        campaignResolved: false,
+
+        finished: false,
+        createdAt: new Date().toISOString(),
+        lastAI: null
+    };
+
+    selectedRegion = '수도권';
+    regionSelectionLocked = false;
+    if ($('baseMap')) $('baseMap').src = 'map.png';
+
+    $('setup')?.classList.add('hidden');
+    $('resultPanel')?.classList.add('hidden');
+    $('stagePanel')?.classList.remove('hidden');
+
+    renderStage();
+    renderAll();
+    saveLocal();
+
+    toast('새 가상 총선을 시작했습니다.');
+}
+
+function log(title, detail) {
+    game.logs.unshift({
+        title,
+        detail,
+        stage: game.stage + 1,
+        at: new Date().toISOString()
+    });
+
+    game.logs = game.logs.slice(0, 100);
+}
+
+function renderAll() {
+    if (!game) {
+        setText('mStage', '시작 전');
+        setText('mSupport', '2.7%');
+        setText('mPR', '—석');
+        setText('mStrategy', '10 / 10');
+
+        if ($('pStage')) $('pStage').style.width = '0%';
+        if ($('pSupport')) $('pSupport').style.width = '2.7%';
+        if ($('pPR')) $('pPR').style.width = '0%';
+        if ($('pStrategy')) $('pStrategy').style.width = '100%';
+
+        renderRegion();
+        renderBars();
+        renderLogs();
+        return;
+    }
+
+    setText('mStage', `${Math.min(game.stage + 1, 10)} / 10`);
+    setText('mSupport', game.support.toFixed(1) + '%');
+    setText('mPR', `${estimatePR()}석`);
+    setText('mStrategy', `${game.strategyLeft} / 10`);
+
+    if ($('pStage')) {
+        $('pStage').style.width = `${game.stage / 10 * 100}%`;
+    }
+
+    if ($('pSupport')) {
+        $('pSupport').style.width = `${game.support}%`;
+    }
+
+    if ($('pPR')) {
+        $('pPR').style.width =
+            `${estimatePR() / game.settings.pr * 100}%`;
+    }
+
+    if ($('pStrategy')) {
+        $('pStrategy').style.width =
+            `${game.strategyLeft * 10}%`;
+    }
+
+    renderRegion();
+    renderBars();
+    renderLogs();
+}
+
+/* =====================================================
+   5. 지도 클릭 및 권역 선택
+   ===================================================== */
+
+function pointInPolygon(x, y, points) {
+    let inside = false;
+
+    for (
+        let i = 0, j = points.length - 1;
+        i < points.length;
+        j = i++
+    ) {
+        const xi = points[i][0];
+        const yi = points[i][1];
+        const xj = points[j][0];
+        const yj = points[j][1];
+
+        const crosses =
+            ((yi > y) !== (yj > y)) &&
+            (
+                x <
+                (xj - xi) * (y - yi) /
+                ((yj - yi) || 0.000001) + xi
+            );
+
+        if (crosses) inside = !inside;
+    }
+
+    return inside;
+}
+
+function rememberMapSize(map) {
+    if (!map.dataset.baseWidth || !map.dataset.baseHeight) {
+        map.dataset.baseWidth = map.naturalWidth || 600;
+        map.dataset.baseHeight = map.naturalHeight || 400;
+    }
+}
+
+function getMapArea(event, map) {
+    const rect = map.getBoundingClientRect();
+
+    if (!rect.width || !rect.height) return null;
+
+    const x = (event.clientX - rect.left) / rect.width * 100;
+    const y = (event.clientY - rect.top) / rect.height * 100;
+
+    const baseWidth = Number(map.dataset.baseWidth) || 600;
+    const baseHeight = Number(map.dataset.baseHeight) || 400;
+
+    return MAP_AREAS.find(area => {
+        const points = area.pixel
+            ? area.coords.map(([px, py]) => [
+                px / baseWidth * 100,
+                py / baseHeight * 100
+            ])
+            : area.coords;
+
+        return pointInPolygon(x, y, points);
+    }) || null;
+}
+
+function selectRegion(region) {
+    if (!REGIONS.some(([name]) => name === region)) return;
+
+    selectedRegion = region;
+    regionSelectionLocked = true;
+
+    const map = $('baseMap');
+    const selectedArea = MAP_AREAS.find(area => area.name === selectedRegion);
+    if (map && selectedArea) {
+        map.src = selectedArea.image;
+        map.dataset.hoverRegion = '';
+    }
+
+    renderRegion();
+    renderBars();
+
+    const label = $('policyRegionLabel');
+    if (label) label.textContent = selectedRegion;
+}
+
+function renderRegion() {
+    const map = $('baseMap');
+
+    if (map && !map.dataset.mapEventsBound) {
+        const initializeSize = () => rememberMapSize(map);
+
+        if (map.complete && map.naturalWidth) {
+            initializeSize();
+        } else {
+            map.addEventListener('load', initializeSize);
+        }
+
+        map.addEventListener('mousemove', event => {
+            rememberMapSize(map);
+
+            // 권역을 한 번 선택한 뒤에는 커서를 움직여도 선택 이미지가 바뀌지 않음.
+            if (regionSelectionLocked) return;
+
+            // 아직 선택 전일 때만 마우스 오버 미리보기를 표시함.
+            const area = getMapArea(event, map);
+            const nextImage = area ? area.image : 'map.png';
+
+            if (!map.src.endsWith('/' + nextImage) &&
+                !map.src.endsWith(nextImage)) {
+                map.src = nextImage;
+            }
+
+            map.dataset.hoverRegion = area?.name || '';
+        });
+
+        map.addEventListener('mouseleave', () => {
+            const selectedArea = MAP_AREAS.find(item => item.name === selectedRegion);
+            const nextImage = regionSelectionLocked
+                ? (selectedArea?.image || 'map.png')
+                : 'map.png';
+
+            if (!map.src.endsWith('/' + nextImage) &&
+                !map.src.endsWith(nextImage)) {
+                map.src = nextImage;
+            }
+
+            map.dataset.hoverRegion = '';
+        });
+
+        map.addEventListener('click', event => {
+            rememberMapSize(map);
+
+            const area = getMapArea(event, map);
+            if (!area) return;
+
+            selectRegion(area.name);
+        });
+
+        map.dataset.mapEventsBound = '1';
+    }
+
+    // 다른 화면 갱신 이후에도 선택한 권역 이미지를 기본 표시로 유지함.
+    if (map && regionSelectionLocked && !map.dataset.hoverRegion) {
+        const selectedArea = MAP_AREAS.find(item => item.name === selectedRegion);
+        const selectedImage = selectedArea?.image || 'map.png';
+        if (!map.src.endsWith('/' + selectedImage) &&
+            !map.src.endsWith(selectedImage)) {
+            map.src = selectedImage;
+        }
+    }
+
+    setText('selectedRegion', selectedRegion);
+    setText(
+        'selectedSupport',
+        getRegionSupport(selectedRegion).toFixed(1) + '%'
+    );
+
+    const pledgeCount = game
+        ? game.pledges.filter(p => p.region === selectedRegion).length
+        : 0;
+
+    setText('selectedPolicies', pledgeCount + '건');
+
+    const policyLabel = $('policyRegionLabel');
+    if (policyLabel) {
+        policyLabel.textContent = selectedRegion;
+    }
+}
+
+/* =====================================================
+   6. 지지율 막대그래프 및 기록
+   ===================================================== */
+
+function renderBars() {
+    const draw = (id, object) => {
+        const root = $(id);
+        if (!root) return;
+
+        root.innerHTML = Object.entries(object).map(([name, value]) => `
+            <div class="barrow">
+                <span>${esc(name)}</span>
+                <div class="barline">
+                    <span style="width:${clamp(value / 30 * 100, 0, 100)}%"></span>
+                </div>
+                <b>${value.toFixed(1)}%</b>
+            </div>
+        `).join('');
+    };
+
+    const groups = game?.groups || initialGroups();
+
+    draw('regionBars', groups.regions);
+    draw('ageBars', groups.ages);
+    draw('jobBars', groups.jobs);
+}
+
+function renderLogs() {
+    const root = $('logs');
+    if (!root) return;
+
+    setText('logCount', (game?.logs.length || 0) + '건');
+
+    root.innerHTML = game?.logs.length
+        ? game.logs.map(item => `
+            <div class="log">
+                <b>${esc(item.title)}</b>
+                <p>${esc(item.detail)}</p>
+            </div>
+        `).join('')
+        : '<div class="muted">아직 기록이 없습니다.</div>';
+}
+
+function esc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[character]));
+}
+
+function estimatePR() {
+    if (!game) return 0;
+
+    return allocateSeats(
+        game.support,
+        game.settings
+    ).ours;
+}
+
+function makeField(label, id, placeholder = '', type = 'textarea') {
+    return `
+        <div class="field">
+            <label for="${id}">${label}</label>
+            ${
+                type === 'textarea'
+                    ? `<textarea id="${id}" placeholder="${esc(placeholder)}"></textarea>`
+                    : `<input id="${id}" placeholder="${esc(placeholder)}">`
+            }
+        </div>
+    `;
+}
+
+/* =====================================================
+   7. 지원 유세 관리
+   ===================================================== */
+
+/*
+ * 지원 유세는 전체 게임에서 10회까지 사용할 수 있음.
+ * 버튼을 누르면 해당 공약에 지원 유세 사용 여부를 선택함.
+ * 실제 횟수 차감은 AI 평가가 성공한 뒤에만 진행함.
+ */
+
+function makeRallyKey(region, text) {
+    const normalized = String(text || '')
+        .replace(/\s/g, '')
+        .trim()
+        .slice(0, 500);
+
+    return `${region || '전국'}|${normalized}`;
+}
+
+function isRallyAlreadyUsed(region, text) {
+    if (!game) return false;
+
+    const key = makeRallyKey(region, text);
+
+    return game.usedStrategies.includes(key);
+}
+
+function applyRallyBonus(region) {
+    /*
+     * 지원 유세 추가 효과
+     * 전국 지지율 +0.22%p
+     * 해당 권역 지지율 +0.35%p
+     */
+
+    game.support = clamp(
+        game.support + 0.22,
+        0.5,
+        25
+    );
+
+    if (region && game.groups.regions[region] !== undefined) {
+        game.groups.regions[region] = clamp(
+            game.groups.regions[region] + 0.35,
+            0.2,
+            30
+        );
+    } else {
+        Object.keys(game.groups.regions).forEach(name => {
+            game.groups.regions[name] = clamp(
+                game.groups.regions[name] + 0.08,
+                0.2,
+                30
+            );
+        });
+    }
+}
+
+function bindRallyButton(buttonId, infoId, getRegion, getText) {
+    const button = $(buttonId);
+    const info = $(infoId);
+
+    if (!button) return () => false;
+
+    let selected = false;
+
+    const refresh = () => {
+        const region = getRegion();
+        const text = getText();
+
+        const used = text && isRallyAlreadyUsed(region, text);
+        const exhausted = game.strategyLeft <= 0;
+
+        if (used) {
+            selected = false;
+            button.disabled = true;
+            button.textContent = '이미 사용한 공약';
+        } else if (exhausted) {
+            selected = false;
+            button.disabled = true;
+            button.textContent = '지원 유세 소진';
+        } else {
+            button.disabled = false;
+            button.textContent = selected
+                ? '지원 유세 선택됨 · 취소하기'
+                : '지원 유세 사용하기';
+        }
+
+        if (info) {
+            info.textContent =
+                `지원 유세 잔여 횟수: ${game.strategyLeft}회` +
+                (selected ? ' · 이번 발표에 사용 예정' : '');
+        }
+    };
+
+    button.onclick = () => {
+        const region = getRegion();
+        const text = getText();
+
+        if (!text.trim()) {
+            toast('먼저 공약 내용을 작성하세요.');
+            return;
+        }
+
+        if (isRallyAlreadyUsed(region, text)) {
+            toast('이미 지원 유세를 사용한 공약입니다.');
+            refresh();
+            return;
+        }
+
+        if (game.strategyLeft <= 0) {
+            toast('지원 유세를 모두 사용했습니다.');
+            refresh();
+            return;
+        }
+
+        selected = !selected;
+        refresh();
+
+        toast(
+            selected
+                ? '이번 발표에 지원 유세를 사용합니다.'
+                : '지원 유세 사용을 취소했습니다.'
+        );
+    };
+
+    const isSelected = () => {
+        refresh();
+        return selected;
+    };
+
+    refresh();
+
+    return isSelected;
+}
+
+/* =====================================================
+   8. 단계별 화면 렌더링
+   ===================================================== */
+
+function renderStage() {
+    if (!game || game.finished) return;
+
+    const [tag, title, description] = STAGES[game.stage];
+
+    setText('phasePill', `PHASE ${game.stage + 1} · ${tag}`);
+    setText('stageCount', `${game.stage + 1} / 10`);
+    setText('stageTitle', title);
+    setText('stageDesc', description);
+
+    $('aiOutput')?.classList.add('hidden');
+
+    if ($('aiOutput')) {
+        $('aiOutput').innerHTML = '';
+    }
+
+    if ($('nextBtn')) {
+        $('nextBtn').disabled = true;
+    }
+
+    const form = $('stageForm');
+    if (!form) return;
+
+    form.innerHTML = '';
+
+    /* -------------------------------
+       PHASE 1. 공천
+       ------------------------------- */
+
+    if (game.stage === 0) {
+        form.innerHTML = `
+            <div class="field">
+                <label>후보자 이름</label>
+                <input id="candName" maxlength="40" placeholder="가상 후보자 이름">
+            </div>
+
+            <div class="field">
+                <label>출마 지역</label>
+                <input id="candDistrict" maxlength="50" placeholder="예: 서울 ○○구">
+            </div>
+
+            <div class="field">
+                <label>경력</label>
+                <textarea id="candCareer" placeholder="주요 경력과 활동"></textarea>
+            </div>
+
+            <div class="field">
+                <label>전문 분야</label>
+                <input id="candExpertise" placeholder="예: 과학기술·교육·지역경제">
+            </div>
+
+            <div class="field">
+                <label>주요 정책 방향</label>
+                <textarea id="candPolicy" placeholder="후보자가 중점적으로 다룰 의제"></textarea>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn secondary" id="addCandidate">후보자 추가</button>
+                <button class="btn primary" id="finishCandidates">공천 확정 및 AI 평가</button>
+            </div>
+
+            <div class="list" id="candidateList"></div>
+        `;
+
+        $('addCandidate').onclick = addCandidate;
+
+        $('finishCandidates').onclick = () => {
+            if (!game.candidates.length) {
+                toast('후보자를 최소 1명 등록하세요.');
+                return;
+            }
+
+            evaluateText(
+                'candidate_batch',
+                candidateSummary(),
+                '공천 후보자 평가'
+            );
+        };
+
+        renderCandidateList();
+    }
+
+    /* -------------------------------
+       PHASE 2. 후보자 공약
+       ------------------------------- */
+
+    else if (game.stage === 1) {
+        const options = game.candidates.map((candidate, index) => `
+            <option value="${index}">
+                ${esc(candidate.name)} · ${esc(candidate.district)}
+            </option>
+        `).join('');
+
+        form.innerHTML = `
+            <div class="field">
+                <label>공약을 발표할 후보자</label>
+                <select id="candidateSelect">
+                    ${options || '<option value="">공천 후보자 없음</option>'}
+                </select>
+            </div>
+
+            ${makeField(
+                '차별화 공약 제목',
+                'pledgeTitle',
+                '공약 제목',
+                'input'
+            )}
+
+            ${makeField(
+                '공약 내용',
+                'stageText',
+                '대상·실행 방법·재원·일정·성과 기준을 작성하세요.'
+            )}
+
+            <div class="ai-result">
+                <b>지원 유세</b>
+                <p>이번 후보자 공약 발표에 지원 유세를 사용할 수 있습니다.</p>
+                <button class="btn secondary" id="useCandidateRally" type="button">
+                    지원 유세 사용하기
+                </button>
+                <p class="small-note" id="candidateRallyInfo">
+                    지원 유세 잔여 횟수: ${game.strategyLeft}회
+                </p>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn primary" id="evaluateBtn">
+                    AI 공약 평가 및 반영
+                </button>
+            </div>
+        `;
+
+        const getCandidate = () => {
+            const index = Number($('candidateSelect')?.value);
+            return game.candidates[index] || null;
+        };
+
+        const useRally = bindRallyButton(
+            'useCandidateRally',
+            'candidateRallyInfo',
+            () => regionForDistrict(getCandidate()?.district || ''),
+            () => $('pledgeTitle')?.value + '\n' + $('stageText')?.value
+        );
+
+        $('evaluateBtn').onclick = () => {
+            const candidate = getCandidate();
+
+            if (!candidate) {
+                toast('후보자를 먼저 공천하세요.');
+                return;
+            }
+
+            const title = $('pledgeTitle').value.trim();
+            const content = $('stageText').value.trim();
+
+            if (!title || !content) {
+                toast('공약 제목과 내용을 입력하세요.');
+                return;
+            }
+
+            evaluateText(
+                'candidate_policy',
+                `후보자: ${candidate.name}
+출마 지역: ${candidate.district}
+전문 분야: ${candidate.expertise}
+공약 제목: ${title}
+공약 내용: ${content}`,
+                '후보자 차별화 공약 평가',
+                {
+                    region: regionForDistrict(candidate.district),
+                    useStrategy: useRally()
+                }
+            );
+        };
+    }
+
+    /* -------------------------------
+       PHASE 3, 5. 권역 정책
+       ------------------------------- */
+
+    else if (game.stage === 2 || game.stage === 4) {
+        form.innerHTML = `
+            <div class="field">
+                <label>정책 발표 권역</label>
+
+                <div class="ai-result">
+                    지도에서 권역을 클릭해 선택하세요.
+                    <br>
+                    현재 선택 권역:
+                    <b id="policyRegionLabel">${esc(selectedRegion)}</b>
+                </div>
+            </div>
+
+            ${makeField(
+                '정책 제목',
+                'pledgeTitle',
+                '정책 제목',
+                'input'
+            )}
+
+            ${makeField(
+                '정책 내용',
+                'stageText',
+                '정책 목표, 대상, 실행 방법, 재원, 일정, 성과 지표를 직접 작성하세요.'
+            )}
+
+            <div class="field">
+                <label>
+                    <input id="sciencePolicy" type="checkbox" style="width:auto">
+                    과학기술 핵심 정책
+                </label>
+
+                <small class="muted">
+                    과학기술 정책은 기술 구체성 평가 항목을 추가합니다.
+                </small>
+            </div>
+
+            <div class="ai-result">
+                <b>지원 유세</b>
+                <p>이번 권역 정책 발표에 지원 유세를 사용할 수 있습니다.</p>
+
+                <button class="btn secondary" id="usePolicyRally" type="button">
+                    지원 유세 사용하기
+                </button>
+
+                <p class="small-note" id="policyRallyInfo">
+                    지원 유세 잔여 횟수: ${game.strategyLeft}회
+                </p>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn primary" id="evaluateBtn">
+                    AI 정책 평가 및 발표
+                </button>
+            </div>
+        `;
+
+        const useRally = bindRallyButton(
+            'usePolicyRally',
+            'policyRallyInfo',
+            () => selectedRegion,
+            () => $('pledgeTitle')?.value + '\n' + $('stageText')?.value
+        );
+
+        $('evaluateBtn').onclick = () => {
+            const title = $('pledgeTitle').value.trim();
+            const content = $('stageText').value.trim();
+
+            if (!title || !content) {
+                toast('정책 제목과 내용을 입력하세요.');
+                return;
+            }
+
+            evaluateText(
+                'policy',
+                `정책 제목: ${title}
+발표 권역: ${selectedRegion}
+정책 내용: ${content}`,
+                '권역 정책 평가',
+                {
+                    region: selectedRegion,
+                    science: $('sciencePolicy').checked,
+                    useStrategy: useRally()
+                }
+            );
+        };
+    }
+
+    /* -------------------------------
+       PHASE 4, 7. 돌발 이벤트
+       ------------------------------- */
+
+    else if (game.stage === 3 || game.stage === 6) {
+        form.innerHTML = `
+            <div class="event" id="eventBox">
+                <b>${esc(game.event?.title || '가상 돌발 상황')}</b>
+                <p>${esc(game.event?.description || '가상의 경제·사회·산업·과학기술 관련 사건이 발생했습니다.')}</p>
+            </div>
+
+            ${makeField(
+                '정당의 공식 대응',
+                'stageText',
+                '확인된 사실, 대응 원칙, 실행 조치, 책임 주체, 후속 공개 계획을 작성하세요.'
+            )}
+
+            <div class="btn-row">
+                <button class="btn secondary" id="newEvent">AI 사건 생성</button>
+                <button class="btn primary" id="evaluateBtn">AI 대응 평가</button>
+            </div>
+        `;
+
+        $('newEvent').onclick = generateEvent;
+
+        $('evaluateBtn').onclick = () => {
+            evaluateText(
+                'event_response',
+                $('stageText').value,
+                '돌발 이벤트 대응 평가'
+            );
+        };
+
+        if (!game.event || game.eventStage !== game.stage) {
+            game.eventStage = game.stage;
+            game.eventResolved = false;
+            generateEvent();
+        }
+    }
+
+    /* -------------------------------
+       PHASE 6. 가상 여론조사
+       ------------------------------- */
+
+    else if (game.stage === 5) {
+        game.poll = makePoll();
+
+        form.innerHTML = `
+            <div class="result-hero">
+                <small>가상 전국 지지율</small>
+                <strong>${game.support.toFixed(1)}%</strong>
+                <p>가상 정책 반응 지표 · 실제 여론조사가 아님</p>
+            </div>
+
+            <div class="ai-result">
+                <b>가상 조사 요약</b>
+
+                <p>
+                    권역별 지표:
+                    ${Object.entries(game.groups.regions)
+                        .map(([name, value]) => `${name} ${value.toFixed(1)}%`)
+                        .join(' · ')}
+                </p>
+
+                <p>
+                    조사 결과는 게임 내부 계산값이며 실제 모집단·표본·오차범위를 가진 여론조사가 아닙니다.
+                </p>
+            </div>
+
+            ${makeField(
+                '조사 결과에 대한 공식 입장 및 후속 계획',
+                'stageText',
+                '조사 수치 해석, 정책 보완, 공개 설명 및 점검 계획을 작성하세요.'
+            )}
+
+            <div class="btn-row">
+                <button class="btn primary" id="evaluateBtn">AI 대응 평가</button>
+            </div>
+        `;
+
+        $('evaluateBtn').onclick = () => {
+            evaluateText(
+                'poll_response',
+                $('stageText').value,
+                '가상 여론조사 대응 평가'
+            );
+        };
+    }
+
+    /* -------------------------------
+       PHASE 8. 토론회
+       ------------------------------- */
+
+    else if (game.stage === 7) {
+        const question = game.debateQuestion ||
+            '재정 여건이 제한된 상황에서 과학기술 연구개발과 국민 생활 개선을 어떻게 함께 추진할 것인지 설명해 주세요.';
+
+        form.innerHTML = `
+            <div class="event">
+                <b>사회자 질문</b>
+                <p>${esc(question)}</p>
+            </div>
+
+            ${makeField(
+                '토론 답변',
+                'stageText',
+                '주장·근거·재원·실행 일정·예상 부작용과 보완책을 작성하세요.'
+            )}
+
+            <div class="btn-row">
+                <button class="btn secondary" id="newQuestion">질문 새로 받기</button>
+                <button class="btn primary" id="evaluateBtn">AI 토론 평가</button>
+            </div>
+        `;
+
+        $('newQuestion').onclick = generateDebateQuestion;
+
+        $('evaluateBtn').onclick = () => {
+            evaluateText(
+                'debate',
+                $('stageText').value,
+                '후보자 토론 답변 평가'
+            );
+        };
+    }
+
+    /* -------------------------------
+       PHASE 9. 막판 유세
+       ------------------------------- */
+
+    else if (game.stage === 8) {
+        form.innerHTML = `
+            <div class="field">
+                <label>유세 권역</label>
+
+                <select id="campaignRegion">
+                    ${REGIONS.map(([name]) =>
+                        `<option value="${name}">${name}</option>`
+                    ).join('')}
+                    <option value="전국">전국</option>
+                </select>
+            </div>
+
+            ${makeField(
+                '유세 일정 및 활동',
+                'stageText',
+                '일정, 장소 유형, 공개 정책 설명, 질의응답, 후속 공개 활동을 작성하세요.'
+            )}
+
+            <div class="field">
+                <label>
+                    <input type="checkbox" id="useStrategy" style="width:auto">
+                    전략 유세 1회 사용
+                    (잔여 ${game.strategyLeft}회)
+                </label>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn primary" id="evaluateBtn">
+                    AI 유세 계획 평가 및 반영
+                </button>
+            </div>
+        `;
+
+        $('evaluateBtn').onclick = () => {
+            const region = $('campaignRegion').value;
+            const use = $('useStrategy').checked;
+
+            if (use && game.strategyLeft <= 0) {
+                toast('전략 유세를 모두 사용했습니다.');
+                return;
+            }
+
+            evaluateText(
+                'campaign',
+                $('stageText').value,
+                '막판 유세 계획 평가',
+                {
+                    region: region === '전국' ? null : region,
+                    useStrategy: use
+                }
+            );
+        };
+    }
+
+    /* -------------------------------
+       PHASE 10. 개표
+       ------------------------------- */
+
+    else {
+        form.innerHTML = `
+            <div class="ai-result">
+                모든 일정이 완료되었습니다.
+                최종 가상 비례대표 득표율과 의석 배분을 계산합니다.
+            </div>
+
+            <div class="btn-row">
+                <button class="btn primary" id="countBtn">
+                    최종 개표 진행
+                </button>
+            </div>
+        `;
+
+        $('countBtn').onclick = finishGame;
+    }
+
+    renderRegion();
+}
+
+/* =====================================================
+   9. 후보자 관리
+   ===================================================== */
+
+function regionForDistrict(district) {
+    if (/서울|경기|인천/.test(district)) return '수도권';
+
+    if (/대전|세종|충북|충남|충청/.test(district)) {
+        return '충청권';
+    }
+
+    if (/강원/.test(district)) return '강원도';
+
+    if (/대구|경북/.test(district)) return '대경권';
+
+    if (/부산|울산|경남/.test(district)) return '부울경';
+
+    if (/광주|전남|전북|전북특별자치도/.test(district)) {
+        return '호남권';
+    }
+
+    return null;
+}
+
+function addCandidate() {
+    const name = $('candName')?.value.trim();
+    const district = $('candDistrict')?.value.trim();
+
+    if (!name || !district) {
+        toast('후보자 이름과 출마 지역을 입력하세요.');
+        return;
+    }
+
+    if (game.candidates.length >= 10) {
+        toast('후보자는 최대 10명까지 공천할 수 있습니다.');
+        return;
+    }
+
+    game.candidates.push({
+        name,
+        district,
+        career: $('candCareer').value.trim(),
+        expertise: $('candExpertise').value.trim(),
+        policy: $('candPolicy').value.trim(),
+        score: null
+    });
+
+    log('후보자 등록', `${name} · ${district}`);
+
+    renderCandidateList();
+
+    $('candName').value = '';
+    $('candDistrict').value = '';
+    $('candCareer').value = '';
+    $('candExpertise').value = '';
+    $('candPolicy').value = '';
+
+    renderAll();
+    saveLocal();
+}
+
+function renderCandidateList() {
+    const root = $('candidateList');
+    if (!root) return;
+
+    root.innerHTML = game.candidates.length
+        ? game.candidates.map((candidate, index) => `
+            <div class="list-item">
+                <strong>
+                    ${index + 1}. ${esc(candidate.name)} · ${esc(candidate.district)}
+                </strong>
+
+                <p>
+                    ${esc(candidate.expertise || '전문 분야 미입력')}
+                    ·
+                    ${esc(candidate.policy || '주요 정책 미입력')}
+                </p>
+
+                <button
+                    class="btn danger"
+                    data-remove="${index}"
+                    style="margin-top:7px;padding:5px 8px"
+                >
+                    삭제
+                </button>
+            </div>
+        `).join('')
+        : '<div class="muted">공천한 후보자가 없습니다.</div>';
+
+    root.querySelectorAll('[data-remove]').forEach(button => {
+        button.onclick = () => {
+            game.candidates.splice(Number(button.dataset.remove), 1);
+
+            renderCandidateList();
+            renderAll();
+            saveLocal();
+        };
+    });
+}
+
+function candidateSummary() {
+    return game.candidates.map((candidate, index) =>
+        `${index + 1}. ${candidate.name}, ${candidate.district}, 경력:${candidate.career}, 전문:${candidate.expertise}, 정책:${candidate.policy}`
+    ).join('\n');
+}
+
+/* =====================================================
+   10. AI 평가 및 지지율 반영
+   ===================================================== */
+
+async function evaluateText(mode, textValue, title, extra = {}) {
+    if (busy) return;
+
+    const text = String(textValue || '').trim();
+
+    if (!text) {
+        toast('평가할 내용을 한 글자 이상 입력하세요.');
+        return;
+    }
+
+    if (text.length > 4000) {
+        toast('입력은 4,000자 이내로 작성하세요.');
+        return;
+    }
+
+    const strategyKey = makeRallyKey(extra.region, text);
+
+    if (extra.useStrategy && game.usedStrategies.includes(strategyKey)) {
+        toast('이미 지원 유세를 사용한 내용입니다.');
+        return;
+    }
+
+    if (extra.useStrategy && game.strategyLeft <= 0) {
+        toast('지원 유세 횟수가 부족합니다.');
+        return;
+    }
+
+    busy = true;
+
+    if ($('nextBtn')) $('nextBtn').disabled = true;
+
+    const button = $('evaluateBtn');
+    const originalButtonText = button?.textContent || 'AI 평가 및 반영';
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'AI 평가 중…';
+    }
+
+    $('aiOutput')?.classList.remove('hidden');
+
+    if ($('aiOutput')) {
+        $('aiOutput').textContent =
+            'AI가 입력 내용을 평가하고 있습니다…';
+    }
+
+    try {
+        const ai = await callAI({
+            mode,
+            text,
+            stage: game.stage + 1,
+            party: game.party,
+            focus: SCIENCE.join(', '),
+            history: game.logs.slice(0, 8).map(item => item.title),
+            support: game.support,
+            region: extra.region || null,
+            science: !!extra.science
+        });
+
+        const score = clamp(
+            Number(ai.score) || 0,
+            -10,
+            10
+        );
+
+        const scienceBonus = extra.science
+            ? clamp(Number(ai.technology_score) || 0, 0, 10) * 0.12
+            : 0;
+
+        const finalScore = clamp(
+            score + scienceBonus,
+            -10,
+            10
+        );
+
+        /*
+         * AI 평가가 정상적으로 끝난 다음에만
+         * 지지율과 지원 유세 횟수를 반영함.
+         */
+
+        updateSupport(finalScore, {
+            region: extra.region,
+            mode
+        });
+
+        if (extra.useStrategy) {
+            game.strategyLeft--;
+            game.strategyUsed++;
+
+            game.usedStrategies.push(strategyKey);
+
+            applyRallyBonus(extra.region);
+        }
+
+        if (mode === 'candidate_batch') {
+            game.candidates.forEach(candidate => {
+                candidate.score = score;
+            });
+        }
+
+        if (mode === 'candidate_policy' || mode === 'policy') {
+            game.pledges.push({
+                title,
+                region: extra.region || '후보자 지역',
+                text,
+                score: finalScore,
+                science: !!extra.science,
+                usedStrategy: !!extra.useStrategy,
+                createdAt: new Date().toISOString()
+            });
+        }
+
+        if (mode === 'event_response') {
+            game.eventResolved = true;
+        }
+
+        if (mode === 'poll_response') {
+            game.pollResolved = true;
+        }
+
+        if (mode === 'debate') {
+            game.debateResolved = true;
+        }
+
+        if (mode === 'campaign') {
+            game.campaignResolved = true;
+        }
+
+        const details = [
+            ['차별성', ai.differentiation],
+            ['구체성', ai.specificity],
+            ['실현 가능성', ai.feasibility],
+            ['재정 타당성', ai.fiscal_soundness],
+            ['사회적 파급효과', ai.social_impact],
+            ['기술 혁신성', ai.innovation]
+        ]
+            .filter(item => item[1] !== undefined)
+            .map(item => `${item[0]} ${item[1]}/10`)
+            .join(' · ');
+
+        const scoreCells = [
+            ['차별성', ai.differentiation],
+            ['구체성', ai.specificity],
+            ['실현 가능성', ai.feasibility],
+            ['재정 타당성', ai.fiscal_soundness]
+        ];
+
+        $('aiOutput').innerHTML = `
+            <div class="score">
+                평가 점수 ${finalScore >= 0 ? '+' : ''}${finalScore.toFixed(1)}점
+            </div>
+
+            <div class="score-grid">
+                ${scoreCells.map(item => `
+                    <div class="score-cell">
+                        <small>${item[0]}</small>
+                        <b>${Number(item[1] ?? 0)}/10</b>
+                    </div>
+                `).join('')}
+            </div>
+
+            <b>${esc(ai.verdict || '종합 검토')}</b>
+
+            <p>${esc(ai.explanation || '입력한 내용을 평가했습니다.')}</p>
+
+            <p>
+                <b>긍정 요소:</b>
+                ${esc((ai.strengths || []).join(' · ') || '평가 근거 확인')}
+            </p>
+
+            <p>
+                <b>위험·보완점:</b>
+                ${esc((ai.risks || []).join(' · ') || '추가 검토 필요')}
+            </p>
+
+            <p>
+                <b>개선 제안:</b>
+                ${esc((ai.improvements || []).join(' · ') || '실행 일정과 성과 지표를 구체화')}
+            </p>
+
+            <small class="muted">${esc(details)}</small>
+
+            <p>
+                <b>가상 지지율 변화:</b>
+                ${finalScore >= 0 ? '+' : ''}
+                ${(clamp(finalScore, -10, 10) * 0.055).toFixed(2)}%p
+            </p>
+
+            ${
+                extra.useStrategy
+                    ? '<p><b>지원 유세:</b> 1회 사용 및 추가 효과 반영</p>'
+                    : ''
+            }
+
+            ${
+                extra.science
+                    ? '<p>과학기술 평가 가중치 적용</p>'
+                    : ''
+            }
+        `;
+
+        log(
+            title,
+            `${ai.verdict || 'AI 평가'} · 점수 ${finalScore.toFixed(1)} · ${text.slice(0, 150)}`
+        );
+
+        game.lastAI = {
+            mode,
+            title,
+            score: finalScore,
+            ai
+        };
+
+        if ($('nextBtn')) {
+            $('nextBtn').disabled = false;
+        }
+
+        renderAll();
+        saveLocal();
+
+        toast(
+            extra.useStrategy
+                ? 'AI 평가와 지원 유세 효과를 반영했습니다.'
+                : 'AI 평가 결과를 반영했습니다.'
+        );
+    } catch (error) {
+        if ($('aiOutput')) {
+            $('aiOutput').textContent =
+                'AI 평가 실패: ' + error.message +
+                ' 입력 내용은 유지됩니다.';
+        }
+
+        toast('AI 평가 실패: ' + error.message);
+    } finally {
+        busy = false;
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalButtonText;
+        }
+    }
+}
+
+/* =====================================================
+   11. Supabase AI 함수 호출
+   기존 함수명 및 요청 방식 유지
+   ===================================================== */
+
+async function callAI(payload) {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        throw new Error('Supabase URL 또는 공개 키가 누락되었습니다.');
+    }
+
+    const endpoint =
+        `${SUPABASE_URL}/functions/v1/${AI_FUNCTION}`;
+
+    let response;
+
+    try {
+        response = await fetch(endpoint, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-store',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+
+            body: JSON.stringify(payload)
+        });
+    } catch (error) {
+        console.error('[AI 네트워크 오류]', error);
+
+        throw new Error(
+            `네트워크 요청 실패: ${error.message || error.name}. 브라우저 콘솔과 CORS 설정을 확인하세요.`
+        );
+    }
+
+    const responseText = await response.text();
+
+    let data;
+
+    try {
+        data = JSON.parse(responseText);
+    } catch {
+        console.error('[AI 비정상 응답]', responseText);
+
+        throw new Error(
+            `서버가 JSON이 아닌 응답을 반환했습니다. HTTP ${response.status}`
+        );
+    }
+
+    if (!response.ok) {
+        console.error('[AI 서버 오류]', data);
+
+        throw new Error(
+            data.error ||
+            `Supabase 서버 오류 (HTTP ${response.status})`
+        );
+    }
+
+    if (data.success !== true) {
+        throw new Error(
+            data.error || 'AI 평가에 실패했습니다.'
+        );
+    }
+
+    if (!data.data) {
+        throw new Error('AI 평가 결과가 비어 있습니다.');
+    }
+
+    return data.data;
+}
+
+/* =====================================================
+   12. 돌발 이벤트 및 토론 질문
+   ===================================================== */
+
+async function generateEvent() {
+    const eventBox = $('eventBox');
+
+    try {
+        const ai = await callAI({
+            mode: 'generate_event',
+            stage: game.stage + 1,
+            history: game.logs.slice(0, 8).map(item => item.title)
+        });
+
+        game.event = {
+            title: ai.title,
+            description: ai.description
+        };
+
+        if (eventBox) {
+            eventBox.innerHTML = `
+                <b>${esc(ai.title)}</b>
+                <p>${esc(ai.description)}</p>
+            `;
+        }
+
+        saveLocal();
+    } catch (error) {
+        game.event = {
+            title: '가상 산업·사회 현안 발생',
+            description:
+                '핵심 산업의 공급망 변화와 지역 일자리 전환 문제가 동시에 제기되었습니다. 사실 확인, 이해관계자 의견 수렴, 실행 일정과 지원 원칙을 포함해 대응하세요.'
+        };
+
+        if (eventBox) {
+            eventBox.innerHTML = `
+                <b>${esc(game.event.title)}</b>
+                <p>${esc(game.event.description)}</p>
+            `;
+        }
+
+        saveLocal();
+    }
+}
+
+async function generateDebateQuestion() {
+    const questions = [
+        '연구개발 투자의 성과를 어떻게 검증하고 공개할 것입니까?',
+        '한정된 재정에서 미래 산업과 생활 안전 투자의 우선순위를 어떻게 정하겠습니까?',
+        '기술 혁신 과정에서 발생할 수 있는 지역·산업 간 격차를 어떻게 완화하겠습니까?',
+        '공약의 재원과 실행 주체를 어떻게 검증 가능하게 제시하겠습니까?'
+    ];
+
+    game.debateQuestion =
+        questions[Math.floor(Math.random() * questions.length)];
+
+    renderStage();
+}
+
+function makePoll() {
+    return {
+        support: game.support,
+        regions: { ...game.groups.regions },
+        ages: { ...game.groups.ages },
+        jobs: { ...game.groups.jobs }
+    };
+}
+
+/* =====================================================
+   13. 비례대표 의석 계산
+   ===================================================== */
+
+function allocateSeats(ours, settings) {
+    const partyCount = settings.others;
+    const totalSeats = settings.pr;
+    const threshold = settings.threshold / 100;
+
+    const shares = [
+        ours / 100,
+        ...Array(partyCount).fill(
+            (1 - ours / 100) / partyCount
+        )
+    ];
+
+    const eligible = shares.map((value, index) => ({
+        i: index,
+        v: value >= threshold ? value : 0
+    }));
+
+    const seats = Array(partyCount + 1).fill(0);
+
+    if (settings.formula === 'hare') {
+        const sum =
+            eligible.reduce((total, item) => total + item.v, 0) || 1;
+
+        let remain = totalSeats;
+
+        eligible.forEach(item => {
+            const quota = item.v / sum * totalSeats;
+
+            seats[item.i] = Math.floor(quota);
+            remain -= seats[item.i];
+
+            item.frac = quota - Math.floor(quota);
+        });
+
+        eligible
+            .sort((a, b) => b.frac - a.frac)
+            .slice(0, remain)
+            .forEach(item => {
+                seats[item.i]++;
+            });
+    } else {
+        for (let count = 0; count < totalSeats; count++) {
+            let best = -1;
+            let bestValue = -1;
+
+            eligible.forEach(item => {
+                if (!item.v) return;
+
+                const divisor = settings.formula === 'sainte'
+                    ? (2 * seats[item.i] + 1)
+                    : (seats[item.i] + 1);
+
+                const value = item.v / divisor;
+
+                if (value > bestValue) {
+                    bestValue = value;
+                    best = item.i;
+                }
+            });
+
+            if (best < 0) break;
+
+            seats[best]++;
+        }
+    }
+
+    return {
+        ours: seats[0],
+        seats,
+        shares
+    };
+}
+
+/* =====================================================
+   14. 최종 개표 및 결과 표시
+   ===================================================== */
+
+function finishGame() {
+    if (!game) return;
+
+    const allocation = allocateSeats(
+        game.support,
+        game.settings
+    );
+
+    const district = clamp(
+        Math.floor(
+            game.candidates.length *
+            (game.support / 100) *
+            1.4
+        ),
+        0,
+        game.candidates.length
+    );
+
+    game.finished = true;
+
+    game.result = {
+        pr: allocation.ours,
+        district,
+        total: allocation.ours + district,
+        allocation,
+        formula: game.settings.formula
+    };
+
+    $('stagePanel')?.classList.add('hidden');
+    $('resultPanel')?.classList.remove('hidden');
+
+    setText('finalVote', game.support.toFixed(2) + '%');
+    setText('finalParty', game.party);
+    setText('finalPR', allocation.ours + '석');
+    setText('finalDistrict', district + '석');
+    setText('finalTotal', (allocation.ours + district) + '석');
+
+    setText(
+        'seatExplanation',
+        `헤어-니마이어 방식의 최대잔여법을 변형하여 적용했습니다.
+비례대표 46석을 대상으로 봉쇄조항 ${game.settings.threshold}% 미만 정당은 배분에서 제외합니다.
+각 정당의 의석은 유효 득표율에 따른 정수 의석을 먼저 배분한 뒤, 소수점 잔여가 큰 순서대로 남은 의석을 배분합니다.
+경쟁 정당 득표율은 나머지 득표율을 균등 배분한 가상값입니다.`
+    );
+
+    const names = [
+        game.party,
+        ...Array.from(
+            { length: game.settings.others },
+            (_, index) => `가상 경쟁 정당 ${index + 1}`
+        )
+    ];
+
+    const table = $('seatResults');
+
+    if (table) {
+        table.innerHTML = names.map((name, index) => `
+            <tr>
+                <td>${esc(name)}</td>
+                <td>${(allocation.shares[index] * 100).toFixed(2)}%</td>
+                <td>${allocation.seats[index]}석</td>
+            </tr>
+        `).join('');
+    }
+
+    game.stage = 9;
+
+    log(
+        '최종 개표',
+        `비례 ${allocation.ours}석 · 지역구 ${district}석 · 총 ${allocation.ours + district}석`
+    );
+
+    renderAll();
+    saveLocal();
+}
+
+function finishRenderExisting() {
+    if (!game.result) {
+        finishGame();
+        return;
+    }
+
+    const result = game.result;
+
+    setText('finalVote', game.support.toFixed(2) + '%');
+    setText('finalParty', game.party);
+    setText('finalPR', result.pr + '석');
+    setText('finalDistrict', result.district + '석');
+    setText('finalTotal', result.total + '석');
+
+    $('resultPanel')?.classList.remove('hidden');
+
+    const allocation = result.allocation;
+
+    if (allocation) {
+        const names = [
+            game.party,
+            ...Array.from(
+                { length: game.settings.others },
+                (_, index) => `가상 경쟁 정당 ${index + 1}`
+            )
+        ];
+
+        const table = $('seatResults');
+
+        if (table) {
+            table.innerHTML = names.map((name, index) => `
+                <tr>
+                    <td>${esc(name)}</td>
+                    <td>${(allocation.shares[index] * 100).toFixed(2)}%</td>
+                    <td>${allocation.seats[index]}석</td>
+                </tr>
+            `).join('');
+        }
+    }
+}
+
+/* =====================================================
+   15. 브라우저 저장
+   ===================================================== */
+
+function saveLocal() {
+    if (!game) return;
+
+    try {
+        localStorage.setItem(
+            LOCAL_SAVE_KEY,
+            JSON.stringify(game)
+        );
+    } catch (error) {
+        console.error('[브라우저 저장 실패]', error);
+        toast('브라우저 저장 공간을 확인하세요.');
+    }
+}
+
+/* =====================================================
+   16. Supabase 클라우드 저장 및 불러오기
+   ===================================================== */
+
+async function saveCloud() {
+    if (!game) return;
+
+    saveLocal();
+
+    const payload = {
+        save_key: game.saveKey,
+        game_data: game,
+        updated_at: new Date().toISOString()
+    };
+
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/${SAVE_TABLE}?on_conflict=save_key`,
+        {
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Prefer': 'resolution=merge-duplicates,return=minimal',
+                'x-save-key': game.saveKey
+            },
+
+            body: JSON.stringify(payload)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(await response.text());
+    }
+
+    toast('Supabase에 저장했습니다.');
+}
+
+async function loadCloud() {
+    const local = localStorage.getItem(LOCAL_SAVE_KEY);
+
+    if (local) {
+        try {
+            const parsed = JSON.parse(local);
+
+            if (confirm('이 브라우저의 저장 게임을 불러올까요?')) {
+                restore(parsed);
+                return;
+            }
+        } catch (error) {
+            console.error('[로컬 저장 데이터 오류]', error);
+        }
+    }
+
+    const key = prompt(
+        '저장할 때 보관한 게임 저장 키(saveKey)를 입력하세요.'
+    );
+
+    if (!key) return;
+
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/${SAVE_TABLE}?save_key=eq.${encodeURIComponent(key)}&select=game_data`,
+        {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'x-save-key': key
+            }
+        }
+    );
+
+    const rows = await response.json();
+
+    if (!response.ok || !Array.isArray(rows) || !rows.length) {
+        throw new Error('저장 게임을 찾지 못했습니다.');
+    }
+
+    restore(rows[0].game_data);
+}
+
+/* =====================================================
+   17. 저장 게임 복원 및 데이터 보완
+   ===================================================== */
+
+function restore(savedGame) {
+    if (!savedGame || typeof savedGame !== 'object') {
+        toast('저장 데이터 형식이 올바르지 않습니다.');
+        return;
+    }
+
+    game = savedGame;
+
+    const defaults = initialGroups();
+
+    game.groups = {
+        ...defaults,
+        ...(game.groups || {}),
+
+        regions: {
+            ...INITIAL_REGION_SUPPORT,
+            ...(game.groups?.regions || {})
+        },
+
+        ages: {
+            ...defaults.ages,
+            ...(game.groups?.ages || {})
+        },
+
+        jobs: {
+            ...defaults.jobs,
+            ...(game.groups?.jobs || {})
+        }
+    };
+
+    game.candidates = Array.isArray(game.candidates)
+        ? game.candidates
+        : [];
+
+    game.pledges = Array.isArray(game.pledges)
+        ? game.pledges
+        : [];
+
+    game.logs = Array.isArray(game.logs)
+        ? game.logs
+        : [];
+
+    game.strategyLeft = Number.isFinite(Number(game.strategyLeft))
+        ? clamp(Number(game.strategyLeft), 0, 10)
+        : 10;
+
+    game.strategyUsed = Number.isFinite(Number(game.strategyUsed))
+        ? Math.max(0, Number(game.strategyUsed))
+        : 0;
+
+    game.usedStrategies = Array.isArray(game.usedStrategies)
+        ? game.usedStrategies
+        : [];
+
+    game.party = '개혁신당';
+
+game.settings = {
+    ...game.settings,
+    total: 300,
+    pr: 46,
+    formula: 'hare',
+    threshold: Number(game.settings?.threshold ?? 3),
+    others: Number(game.settings?.others ?? 3),
+    difficulty: game.settings?.difficulty || 'normal'
+};
+
+    game.eventResolved = !!game.eventResolved;
+    game.pollResolved = !!game.pollResolved;
+    game.debateResolved = !!game.debateResolved;
+    game.campaignResolved = !!game.campaignResolved;
+
+    selectedRegion = '수도권';
+
+    $('setup')?.classList.add('hidden');
+
+    $('resultPanel')?.classList.toggle(
+        'hidden',
+        !game.finished
+    );
+
+    $('stagePanel')?.classList.toggle(
+        'hidden',
+        !!game.finished
+    );
+
+    if (game.finished) {
+        finishRenderExisting();
+    } else {
+        renderStage();
+    }
+
+    renderAll();
+    saveLocal();
+
+    toast('저장 게임을 불러왔습니다.');
+}
+
+/* =====================================================
+   18. 단계 진행
+   ===================================================== */
+
+if ($('startBtn')) {
+    $('startBtn').onclick = startGame;
+}
+
+if ($('nextBtn')) {
+    $('nextBtn').onclick = () => {
+        if (!game || busy) return;
+
+        if (game.stage === 0 && game.candidates.length === 0) {
+            toast('후보자를 최소 1명 공천하세요.');
+            return;
+        }
+
+        if (game.stage === 3 || game.stage === 6) {
+            if (!game.eventResolved) {
+                toast('돌발 이벤트 대응을 먼저 평가하세요.');
+                return;
+            }
+
+            game.eventResolved = false;
+        }
+
+        if (game.stage === 5 && !game.pollResolved) {
+            toast('여론조사 대응을 먼저 평가하세요.');
+            return;
+        }
+
+        if (game.stage === 7 && !game.debateResolved) {
+            toast('토론 답변을 먼저 평가하세요.');
+            return;
+        }
+
+        if (game.stage === 8 && !game.campaignResolved) {
+            toast('막판 유세 계획을 먼저 평가하세요.');
+            return;
+        }
+
+if (game.stage >= 9) {
+    toast('최종 개표를 진행하세요.');
+    return;
+}
+        game.stage++;
+
+        if (game.stage === 7) {
+            generateDebateQuestion();
+        } else {
+            renderStage();
+        }
+
+        renderAll();
+        saveLocal();
+    };
+}
+
+/* =====================================================
+   19. 저장·불러오기·초기화 버튼
+   ===================================================== */
+
+if ($('saveBtn')) {
+    $('saveBtn').onclick = () => {
+        saveCloud().catch(error => {
+            toast('저장 실패: ' + error.message);
+        });
+    };
+}
+
+if ($('saveStageBtn')) {
+    $('saveStageBtn').onclick = () => {
+        saveLocal();
+        toast('현재 브라우저에 저장했습니다.');
+    };
+}
+
+if ($('saveResultBtn')) {
+    $('saveResultBtn').onclick = () => {
+        saveCloud().catch(error => {
+            toast('저장 실패: ' + error.message);
+        });
+    };
+}
+
+if ($('loadBtn')) {
+    $('loadBtn').onclick = () => {
+        loadCloud().catch(error => {
+            toast('불러오기 실패: ' + error.message);
+        });
+    };
+}
+
+if ($('resetBtn')) {
+    $('resetBtn').onclick = () => {
+        if (!confirm('현재 게임을 초기화할까요?')) return;
+
+        localStorage.removeItem(LOCAL_SAVE_KEY);
+
+        game = null;
+        selectedRegion = '수도권';
+
+        $('stagePanel')?.classList.add('hidden');
+        $('resultPanel')?.classList.add('hidden');
+        $('setup')?.classList.remove('hidden');
+
+        renderAll();
+    };
+}
+
+if ($('newGameBtn')) {
+    $('newGameBtn').onclick = () => {
+        game = null;
+        selectedRegion = '수도권';
+
+        $('resultPanel')?.classList.add('hidden');
+        $('stagePanel')?.classList.add('hidden');
+        $('setup')?.classList.remove('hidden');
+
+        renderAll();
+    };
+}
+
+/* =====================================================
+   20. 최초 실행
+   ===================================================== */
+
+renderAll();
+
+</script>
+</body></html>
